@@ -1,32 +1,76 @@
 import React, { useState } from "react";
 import "./base.css";
+import Tree from "./component/tree";
 
 const Base = () => {
   const [item, setItem] = useState("");
   const [hierarchy, setHierarchy] = useState("");
   const [parent, setParent] = useState("");
-  // const [tree, setTree] = useState({});
+  // const [child, setChild] = useState([]);
   const [parentList, setParentList] = useState([]);
-  const [dataDisplay, setDataDisplay]= useState([]);
+  const [dataDisplay, setDataDisplay] = useState([]);
 
   const datafetch = (e) => {
     e.preventDefault();
-    console.log("under the function after the submit button");
-    const itemDetail = {
-      item,
-      hierarchy,
-      parent,
-    };
-    // setTree({ ...tree, itemDetail });
-    if (hierarchy === "parent") {
-      setParentList([...parentList,item]);
+    let itemDetail;
+    if(parent === ''){
+       itemDetail = {
+        item,
+        hierarchy,
+        parent,
+        child:[]
+      };
     }
+    else{
+      itemDetail = {
+        item,
+        hierarchy,
+        parent,
+        child:['true']
+      };
+      // dataDisplay.map((data) => (
+      //   data.filter(data2 =>
+      //     {
+      //       if(data.item===data.parent)
+      //     }
+            
+      //   )
+
+      // ))
+    }
+    
+
+    setParentList([...parentList, item]);
     setDataDisplay([...dataDisplay, itemDetail]);
+    setHierarchy("select");
+    setParent("");
+
+    
   };
-  const handleHierarchy = (e) =>{
+  console.log("parentlist",dataDisplay);
+
+
+  // const reArrange = (data) => {
+  //   const arrangeData = [];
+  //   data?.map((ele) => {
+  //     if (ele.hierarchy === "parent") {
+  //       arrangeData.push(ele);
+  //       data.map((e) => {
+  //         if (e.parent === ele.item) {
+  //           arrangeData.push(e);
+  //         }
+  //       });
+  //     }
+  //   });
+  //   setDataDisplay(arrangeData);
+  //   setHierarchy("select");
+  //   setParent("");
+  //   console.log("arrangedata", arrangeData);
+
+  // };
+  const handleHierarchy = (e) => {
     setHierarchy(e.target.value);
   };
-  console.log('datadisplay1', dataDisplay);
 
   return (
     <>
@@ -48,40 +92,33 @@ const Base = () => {
           <select
             id="opt"
             defaultValue="select"
+            value={hierarchy}
             onChange={(e) => handleHierarchy(e)}
           >
-            <option disabled>select</option>
+            <option value="select">select</option>
             <option value="parent">Parent</option>
             <option value="child">Child</option>
           </select>
         </div>
         <div>
-          {hierarchy === "child" ? (
+          {hierarchy === "child" && (
             <>
               <label>Parents : </label>
-              <select
-                id="option"
-                defaultValue="select"
-                onChange={(e) => setParent(e.target.value)}
-              >
-                {parentList?.map((ele)=>(<option value={ele}>{ele}</option>))}
+              <select id="option" onChange={(e) => setParent(e.target.value)}>
+                {parentList?.length &&
+                  parentList?.map((ele) => <option value={ele}>{ele}</option>)}
               </select>
             </>
-          ) : null}
+          ) }
         </div>
 
         <button value="Submit" onClick={(e) => datafetch(e)}>
           submit
         </button>
       </form>
-      <div>
-          {dataDisplay?.map((ele)=>(<ul>
-            {/* if ({ele?.Parent === null}){ */}
-              < >{ele?.item}</>
-               {/* } */}
-            
-            </ul>))}
-        </div>
+      <div className="tree-display">
+        <Tree data={dataDisplay}></Tree>
+      </div>
     </>
   );
 };
